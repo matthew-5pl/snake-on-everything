@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "renderer.h": "c",
+        "stdio.h": "c",
+        "snake.h": "c"
+    }
+}
