@@ -1,15 +1,14 @@
 #include "snake.h"
 
-snake* snake_new() {
-    snake* s = (snake*) malloc(sizeof(snake));
-    
+void snake_new(snake* s) {    
     s->parts[0] = (s_point) {GAME_W / 2, GAME_H / 2};
-    s->part_count = 0;
+    s->parts[1] = (s_point) {(GAME_W / 2) + 1, GAME_H / 2};
+    s->parts[2] = (s_point) {(GAME_W / 2) + 2, GAME_H / 2};
+
+    s->part_count = 3;
     
     s->direction = RIGHT;
     s->is_alive = true;
-
-    return s;
 }
 
 void snake_tick(snake* s, s_point* apple) {
@@ -19,7 +18,22 @@ void snake_tick(snake* s, s_point* apple) {
     }
     
     // Get a reference to the snake's head
-    s_point* head = &(s->parts[s->part_count]);
+    s_point* head = &(s->parts[s->part_count-1]);
+
+    switch(s->direction) {
+        case RIGHT:
+            head->x++;
+            break;
+        case LEFT:
+            head->x--;
+            break;
+        case UP:
+            head->y--;
+            break;
+        case DOWN:
+            head->y++;
+            break;
+    }
 
     // Loop the position around the game world
     head->x = head->x % GAME_W;
@@ -38,14 +52,31 @@ void snake_tick(snake* s, s_point* apple) {
     if (head->x == apple->x && head->y == apple->y) {
         snake_add_part(s);
 
-        printf("aple\n");
-    } else {
-        for (int i = 0; i < s->part_count-1; i++) {
-            s_point* part = &(s->parts[i]);
-            s_point* part_n = &(s->parts[i + 1]);
+        apple->x = rand() % randrange(0, GAME_W - 1);
+        apple->y = rand() % randrange(0, GAME_H - 1);
 
-            part->x = part_n->x;
-            part->y = part_n->y;
+        printf("rand x %d y %d\n", apple->x, apple->y);
+    } else {
+        for (int i = 0; i < s->part_count - 1; i++) {
+            for (int j = 0; j < s->part_count - 1; j++) {
+                if (i == j) {
+                    continue;
+                }
+
+                if (s->parts[i].x == s->parts[j].x &&
+                    s->parts[i].y == s->parts[j].y &&
+                    i != j+1) {
+                    s->is_alive = false;
+
+                    apple->x = rand() % GAME_W;
+                    apple->y = rand() % GAME_H;
+
+                    snake_new(s);
+                }
+            }
+
+            s->parts[i].x = s->parts[i + 1].x;
+            s->parts[i].y = s->parts[i + 1].y;
         }
     }
 }
@@ -55,8 +86,8 @@ void snake_add_part(snake* s) {
         return;
     }
 
-    s->parts[s->part_count+1].x = s->parts[s->part_count].x;
-    s->parts[s->part_count+1].y = s->parts[s->part_count].y;
+    s->parts[s->part_count].x = s->parts[s->part_count-1].x;
+    s->parts[s->part_count].y = s->parts[s->part_count-1].y;
     s->part_count++;
 }
 

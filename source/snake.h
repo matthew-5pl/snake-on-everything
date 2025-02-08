@@ -2,15 +2,23 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#include "platform.h"
+#include "util.h"
+
 // The size of a game unit in pixels
-#define GAME_UNIT_PX = 15
+#define GAME_UNIT_PX 15
 
 // Size of the game world in game units
+#if defined(SNAKE_PLATFORM_SDL)
 #define GAME_W 50
 #define GAME_H 50
+#elif defined(SNAKE_PLATFORM_GC)
+#define GAME_W 41
+#define GAME_H 34
+#endif
 
 // Maximum size of a Snake
-#define MAX_SNAKE 10
+#define MAX_SNAKE 50
 
 // The snake's direction
 typedef enum snake_dir {
@@ -33,6 +41,6 @@ typedef struct {
     snake_dir direction;
 } snake;
 
-snake* snake_new();
+void snake_new(snake* s);
 void snake_tick(snake* s, s_point* apple);
 void snake_add_part(snake* s);

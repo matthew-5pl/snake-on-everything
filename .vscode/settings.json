@@ -1,7 +1,18 @@
 {
     "files.associations": {
+        "*.sqlbook": "sql",
+        "*.ndjson": "jsonl",
+        "*.dbclient-js": "javascript",
+        "*.embeddedhtml": "html",
+        "*.ucl": "plaintext",
+        "*.m5p": "platformio-debug.asm",
         "renderer.h": "c",
         "stdio.h": "c",
-        "snake.h": "c"
+        "snake.h": "c",
+        "sdl.h": "c",
+        "array": "c",
+        "string": "c",
+        "string_view": "c",
+        "vector": "c"
     }
 }

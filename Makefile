@@ -1,2 +1,6 @@
+ifeq ($(PLATFORM),)
+	PLATFORM := SDL2
+endif
+
 all:
-	gcc -o snake source/*.c -lSDL2
+	make -f Makefile.$(PLATFORM)
