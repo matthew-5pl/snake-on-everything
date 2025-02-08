@@ -75,13 +75,13 @@ snake_dir renderer_getinput(renderer_data** data) {
 
     if (is_start) {
         renderer_cleanup(data);
-    } else if (is_left || sx < 0) {
+    } else if (is_left || sx < -GC_STICK_THRESHOLD) {
         return LEFT;
-    } else if (is_right || sx > 0) {
+    } else if (is_right || sx > GC_STICK_THRESHOLD) {
         return RIGHT;
-    } else if (is_up || sy > 0) {
+    } else if (is_up || sy > GC_STICK_THRESHOLD) {
         return UP;
-    } else if (is_down || sy < 0) {
+    } else if (is_down || sy < -GC_STICK_THRESHOLD) {
         return DOWN;
     }
 #elif defined(SNAKE_PLATFORM_3DS)

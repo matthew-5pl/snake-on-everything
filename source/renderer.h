@@ -1,7 +1,6 @@
 #include <stdio.h>
 
 #include "platform.h"
-
 #include "snake.h"
 
 typedef struct {

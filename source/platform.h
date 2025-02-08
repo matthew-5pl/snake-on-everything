@@ -14,6 +14,9 @@
 #include <grrlib.h>
 #include <ogc/video.h>
 #include <ogc/pad.h>
+
+#define GC_STICK_THRESHOLD 48
+#define NO_SLEEP
 #endif
 
 #if defined(__3DS__)

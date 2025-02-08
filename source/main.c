@@ -12,6 +12,10 @@ int main() {
 
     s_point apple = (s_point) {GAME_W / 2, GAME_H / 20};
 
+    #ifdef NO_SLEEP
+    unsigned char frame_count = 0;
+    #endif
+
     while(true) {
         snake_dir dir = renderer_getinput(&data);
         
@@ -24,7 +28,18 @@ int main() {
             s.direction = dir;
         }
 
+        #ifdef NO_SLEEP
+        if(frame_count % 3 == 0) {
+        #endif
         snake_tick(&s, &apple);
+        #ifdef NO_SLEEP
+        }
+
+        frame_count++;
+        // Loop around 10
+        frame_count = frame_count % 10;
+        #endif
+
         renderer_loop(&data, &s, &apple);
     }
 
