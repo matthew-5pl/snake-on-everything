@@ -3,3 +3,4 @@ all:
 
 clean:
 	rm -rf ./snake
+	rm -rf *.dSYM

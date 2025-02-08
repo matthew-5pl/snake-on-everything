@@ -12,13 +12,17 @@
 #define GAME_H 50
 #define GAME_UNIT_PX 15
 #elif defined(SNAKE_PLATFORM_GC)
-#define GAME_W 41
-#define GAME_H 34
+#define GAME_W 42
+#define GAME_H 35
 #define GAME_UNIT_PX 15
 #elif defined(SNAKE_PLATFORM_3DS)
 #define GAME_W 50
 #define GAME_H 30
 #define GAME_UNIT_PX 8
+#elif defined(SNAKE_PLATFORM_DS)
+#define GAME_W 42
+#define GAME_H 32
+#define GAME_UNIT_PX 6
 #endif
 
 // Maximum size of a Snake

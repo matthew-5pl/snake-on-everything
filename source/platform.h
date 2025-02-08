@@ -25,5 +25,14 @@
 #include <citro2d.h>
 #endif
 
+#if defined(__NDS__)
+#define SNAKE_PLATFORM_DS
+#include <nds.h>
+#include <gl2d.h>
+
+#define printf(x) iprintf(x)
+
+#endif
+
 #define SNAKE_PLATFORM_H_
 #endif

@@ -25,6 +25,19 @@
             "cStandard": "c17",
             "cppStandard": "c++17",
             "intelliSenseMode": "gcc-arm"
+        },
+        {
+            "name": "DS",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/opt/devkitpro/libnds/include",
+                "/opt/devkitpro/calico/include"
+            ],
+            "defines": ["__NDS__", "PLATFORM_VSCODE"],
+            "compilerPath": "/opt/devkitpro/devkitARM/bin/arm-none-eabi-gcc",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-arm"
         }
     ],
     "version": 4

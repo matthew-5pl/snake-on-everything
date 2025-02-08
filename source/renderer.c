@@ -1,17 +1,14 @@
 #include "renderer.h"
 
 void renderer_init(renderer_data** data) {
-#ifdef SNAKE_PLATFORM_SDL
     *data = (renderer_data*) malloc(sizeof(renderer_data));
-
+#ifdef SNAKE_PLATFORM_SDL
     (*data)->window = SDL_CreateWindow(SNAKE_SDL_TITLE, 
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         GAME_W * GAME_UNIT_PX, GAME_H * GAME_UNIT_PX, 0);
     (*data)->renderer = SDL_CreateRenderer((*data)->window, -1, SDL_RENDERER_ACCELERATED);
     (*data)->event = (SDL_Event*) malloc(sizeof(SDL_Event));
-
 #elif defined(SNAKE_PLATFORM_GC)
-    *data = (renderer_data*) malloc(sizeof(renderer_data));
     GRRLIB_Init();
 
     PAD_Init();
@@ -20,7 +17,6 @@ void renderer_init(renderer_data** data) {
     (*data)->screenWidth = rmode->fbWidth;
     (*data)->screenHeight = rmode->efbHeight;
 #elif defined(SNAKE_PLATFORM_3DS)
-    *data = (renderer_data*) malloc(sizeof(renderer_data));
     gfxInitDefault();
 
     C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
@@ -29,9 +25,13 @@ void renderer_init(renderer_data** data) {
     consoleInit(GFX_BOTTOM, NULL);
 
     (*data)->top = C2D_CreateScreenTarget(GFX_TOP, GFX_RIGHT);
+#elif defined(SNAKE_PLATFORM_DS)
+    videoSetMode(MODE_5_3D);
+    consoleDemoInit();
 
-    printf("Welcome to Snake! Press Start to quit.\n");
+    glScreen2D();
 #endif
+    printf("Welcome to Snake! Press Start to quit.\n");
 }
 
 snake_dir renderer_getinput(renderer_data** data) {
@@ -59,7 +59,6 @@ snake_dir renderer_getinput(renderer_data** data) {
                 break;
         }
     }
-
 #elif defined(SNAKE_PLATFORM_GC)
     PAD_ScanPads();
 
@@ -68,7 +67,7 @@ snake_dir renderer_getinput(renderer_data** data) {
     u16 is_left = PAD_ButtonsDown(0) & PAD_BUTTON_LEFT;
     u16 is_right = PAD_ButtonsDown(0) & PAD_BUTTON_RIGHT;
     u16 is_up = PAD_ButtonsDown(0) & PAD_BUTTON_UP;
-    u16 is_down = PAD_ButtonsDown(0) & PAD_BUTTON_UP;
+    u16 is_down = PAD_ButtonsDown(0) & PAD_BUTTON_DOWN;
 
     s8 sx = PAD_StickX(0);
     s8 sy = PAD_StickY(0);
@@ -93,6 +92,31 @@ snake_dir renderer_getinput(renderer_data** data) {
 
     u32 keys = hidKeysDown();
 
+    u32 is_start = keys & KEY_START;
+    u32 is_left = keys & KEY_LEFT;
+    u32 is_right = keys & KEY_RIGHT;
+    u32 is_up = keys & KEY_UP;
+    u32 is_down = keys & KEY_DOWN;
+
+    if (is_start) {
+        renderer_cleanup(data);
+    } else if (is_left) {
+        return LEFT;
+    } else if (is_right) {
+        return RIGHT;
+    } else if (is_up) {
+        return UP;
+    } else if (is_down) {
+        return DOWN;
+    }
+#elif defined(SNAKE_PLATFORM_DS)
+    if(!pmMainLoop()) {
+        renderer_cleanup(data);
+    }
+
+    scanKeys();
+
+    u32 keys = keysDown();
     u32 is_start = keys & KEY_START;
     u32 is_left = keys & KEY_LEFT;
     u32 is_right = keys & KEY_RIGHT;
@@ -182,6 +206,37 @@ void renderer_loop(renderer_data** data, snake* s, s_point* apple) {
 
     C3D_FrameEnd(0);
     svcSleepThread(50000000);
+#elif defined(SNAKE_PLATFORM_DS)
+    glBegin2D();
+    glBoxFilled(
+        0, 0,
+        255, 191,
+        RGB15(31, 31, 31)
+    );
+
+    for(int i = 0; i < s->part_count; i++) {        
+        glBoxFilled(
+            s->parts[i].x * GAME_UNIT_PX,
+            s->parts[i].y * GAME_UNIT_PX,
+            s->parts[i].x * GAME_UNIT_PX + GAME_UNIT_PX,
+            s->parts[i].y * GAME_UNIT_PX + GAME_UNIT_PX,
+            RGB15(0, 0, 0)
+        );
+    }
+
+    glBoxFilled(
+        apple->x * GAME_UNIT_PX,
+        apple->y * GAME_UNIT_PX,
+        apple->x * GAME_UNIT_PX + GAME_UNIT_PX,
+        apple->y * GAME_UNIT_PX + GAME_UNIT_PX,
+        RGB15(31, 0, 0)
+    );
+
+    glEnd2D();
+    glFlush(0);
+    swiWaitForVBlank();
+
+    sleep_ms(50);
 #endif
 }
 
@@ -198,6 +253,8 @@ void renderer_cleanup(renderer_data** data) {
     C2D_Fini();
     C3D_Fini();
     gfxExit();
+    exit(0);
+#elif defined(SNAKE_PLATFORM_DS)
     exit(0);
 #endif
 }
