@@ -57,6 +57,7 @@ void snake_tick(snake* s, s_point* apple) {
 
         printf("You got an apple!\n");
     } else {
+        // Check for collisions with other parts
         for (int i = 0; i < s->part_count - 1; i++) {
             for (int j = 0; j < s->part_count - 1; j++) {
                 if (i == j) {
@@ -70,9 +71,11 @@ void snake_tick(snake* s, s_point* apple) {
 
                     printf("You're dead :(\n");
 
+                    // Randomize the position of the apple
                     apple->x = rand() % GAME_W;
                     apple->y = rand() % GAME_H;
 
+                    // Reset the snake
                     snake_new(s);
                 }
             }

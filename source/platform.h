@@ -19,11 +19,13 @@
 #define GC_STICK_THRESHOLD 48
 #define NO_SLEEP
 
+// 3DS
 #elif defined(__3DS__)
 #define SNAKE_PLATFORM_3DS
 #include <3ds.h>
 #include <citro2d.h>
 
+// DS
 #elif defined(__NDS__)
 #define SNAKE_PLATFORM_DS
 #include <nds.h>
@@ -31,11 +33,14 @@
 
 #define printf(x) iprintf(x)
 
+// Switch
 #elif defined(__SWITCH__)
 #define SNAKE_PLATFORM_SWITCH
 #define SNAKE_SDL_TITLE "Snake"
-#undef __APPLE__
+#undef __APPLE__ 
+// Or SDL2 will complain about some Apple specific header file when compiling on macOS
 #include <SDL2/SDL.h>
+// We can just use SDL2 for rendering here
 #include <switch.h>
 #endif
 

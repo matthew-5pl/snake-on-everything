@@ -7,6 +7,9 @@
 
 // The size of a game unit in pixels
 // Size of the game world in game units
+
+// Most platforms define their own,
+// since every screen is different
 #if defined(SNAKE_PLATFORM_SDL)
 #define GAME_W 50
 #define GAME_H 50
@@ -29,8 +32,8 @@
 #define GAME_UNIT_PX 30
 #endif
 
-
 // Maximum size of a Snake
+// Who wants to bother using realloc()? Not me!
 #define MAX_SNAKE 50
 
 // The snake's direction

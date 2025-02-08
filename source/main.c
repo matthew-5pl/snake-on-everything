@@ -12,6 +12,14 @@ int main() {
 
     s_point apple = (s_point) {GAME_W / 2, GAME_H / 2};
 
+    // Some platforms (e.g. Gamecube)
+    // have trouble with sleeping on the rendering thread
+    // and will make the output flickery.
+
+    // These will need to define NO_SLEEP in platform.h
+
+    // My workaround is to handle snake logic every third frame
+    // 60 Hz (~60 FPS without logic time) / 3 = 20 FPS (target FPS)
     #ifdef NO_SLEEP
     unsigned char frame_count = 0;
     #endif
@@ -29,6 +37,7 @@ int main() {
         }
 
         #ifdef NO_SLEEP
+        // Handle every third frame
         if(frame_count % 3 == 0) {
         #endif
         snake_tick(&s, &apple);
@@ -36,7 +45,7 @@ int main() {
         }
 
         frame_count++;
-        // Loop around 10
+        // Loop the counter around 10
         frame_count = frame_count % 10;
         #endif
 

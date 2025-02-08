@@ -1,14 +1,15 @@
 #include "renderer.h"
 
 void renderer_init(renderer_data** data) {
+    // Allocate memory for the renderer data
     *data = (renderer_data*) malloc(sizeof(renderer_data));
-#ifdef SNAKE_PLATFORM_SDL
+#ifdef SNAKE_PLATFORM_SDL // SDL platforms (Win, macOS, Linux...)
     (*data)->window = SDL_CreateWindow(SNAKE_SDL_TITLE, 
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         GAME_W * GAME_UNIT_PX, GAME_H * GAME_UNIT_PX, 0);
     (*data)->renderer = SDL_CreateRenderer((*data)->window, -1, SDL_RENDERER_ACCELERATED);
     (*data)->event = (SDL_Event*) malloc(sizeof(SDL_Event));
-#elif defined(SNAKE_PLATFORM_SWITCH)
+#elif defined(SNAKE_PLATFORM_SWITCH) // Switch
     (*data)->window = SDL_CreateWindow(SNAKE_SDL_TITLE, 
         0, 0,
         1920, 1080, 0);
@@ -17,7 +18,7 @@ void renderer_init(renderer_data** data) {
 
     padConfigureInput(1, HidNpadStyleSet_NpadStandard);
     padInitializeDefault(&((*data)->pad));
-#elif defined(SNAKE_PLATFORM_GC)
+#elif defined(SNAKE_PLATFORM_GC) // Gamecube
     GRRLIB_Init();
 
     PAD_Init();
@@ -25,7 +26,7 @@ void renderer_init(renderer_data** data) {
     GXRModeObj *rmode = VIDEO_GetPreferredMode(NULL);
     (*data)->screenWidth = rmode->fbWidth;
     (*data)->screenHeight = rmode->efbHeight;
-#elif defined(SNAKE_PLATFORM_3DS)
+#elif defined(SNAKE_PLATFORM_3DS) // 3DS
     gfxInitDefault();
 
     C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
@@ -34,17 +35,18 @@ void renderer_init(renderer_data** data) {
     consoleInit(GFX_BOTTOM, NULL);
 
     (*data)->top = C2D_CreateScreenTarget(GFX_TOP, GFX_RIGHT);
-#elif defined(SNAKE_PLATFORM_DS)
+#elif defined(SNAKE_PLATFORM_DS) // DS
     videoSetMode(MODE_5_3D);
     consoleDemoInit();
 
     glScreen2D();
 #endif
+    // Not all platforms get to see this :(
     printf("Welcome to Snake! Press Start to quit.\n");
 }
 
 snake_dir renderer_getinput(renderer_data** data) {
-#ifdef SNAKE_PLATFORM_SDL
+#ifdef SNAKE_PLATFORM_SDL // SDL platforms (Win, macOS, Linux...)
     while (SDL_PollEvent((*data)->event)) {
         switch ((*data)->event->type) {
             case SDL_QUIT:
@@ -68,7 +70,7 @@ snake_dir renderer_getinput(renderer_data** data) {
                 break;
         }
     }
-#elif defined(SNAKE_PLATFORM_SWITCH)
+#elif defined(SNAKE_PLATFORM_SWITCH) // Handle Switch input
     padUpdate(&((*data)->pad));
 
     u64 buttons = padGetButtonsDown(&((*data)->pad));
@@ -90,7 +92,7 @@ snake_dir renderer_getinput(renderer_data** data) {
     } else if (is_down) {
         return DOWN;
     }
-#elif defined(SNAKE_PLATFORM_GC)
+#elif defined(SNAKE_PLATFORM_GC) // Handle Gamecube input
     PAD_ScanPads();
 
     u16 buttons = PAD_ButtonsDown(0);
@@ -114,7 +116,7 @@ snake_dir renderer_getinput(renderer_data** data) {
     } else if (is_down || sy < -GC_STICK_THRESHOLD) {
         return DOWN;
     }
-#elif defined(SNAKE_PLATFORM_3DS)
+#elif defined(SNAKE_PLATFORM_3DS) // Handle 3DS input
     if(!aptMainLoop()) {
         renderer_cleanup(data);
     }
@@ -140,7 +142,7 @@ snake_dir renderer_getinput(renderer_data** data) {
     } else if (is_down) {
         return DOWN;
     }
-#elif defined(SNAKE_PLATFORM_DS)
+#elif defined(SNAKE_PLATFORM_DS) // Handle DS input
     if(!pmMainLoop()) {
         renderer_cleanup(data);
     }
@@ -170,6 +172,8 @@ snake_dir renderer_getinput(renderer_data** data) {
 }
 
 void renderer_loop(renderer_data** data, snake* s, s_point* apple) {
+    // I also use SDL2 for rendering on the Switch
+    // So the rendering code is shared with desktop platforms
 #if defined(SNAKE_PLATFORM_SDL) || defined(SNAKE_PLATFORM_SWITCH)
     SDL_SetRenderDrawColor((*data)->renderer, 255, 255, 255, 255);
     SDL_RenderClear((*data)->renderer);
@@ -194,7 +198,7 @@ void renderer_loop(renderer_data** data, snake* s, s_point* apple) {
 
     SDL_RenderPresent((*data)->renderer);
     SDL_Delay(50);
-#elif defined(SNAKE_PLATFORM_GC)
+#elif defined(SNAKE_PLATFORM_GC) // Handle Gamecube rendering (GRRLIB)
     GRRLIB_FillScreen(0xffffffff);
 
     for(int i = 0; i < s->part_count; i++) {        
@@ -214,7 +218,7 @@ void renderer_loop(renderer_data** data, snake* s, s_point* apple) {
     );
 
     GRRLIB_Render();
-#elif defined(SNAKE_PLATFORM_3DS)
+#elif defined(SNAKE_PLATFORM_3DS) // Handle 3DS rendering (citro2d)
     C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
     C2D_TargetClear((*data)->top, C2D_Color32(0xff, 0xff, 0xff, 0xff));
     C2D_SceneBegin((*data)->top);
@@ -237,7 +241,7 @@ void renderer_loop(renderer_data** data, snake* s, s_point* apple) {
 
     C3D_FrameEnd(0);
     svcSleepThread(50000000);
-#elif defined(SNAKE_PLATFORM_DS)
+#elif defined(SNAKE_PLATFORM_DS) // Handle DS rendering (gl2d)
     glBegin2D();
     glBoxFilled(
         0, 0,

@@ -3,6 +3,7 @@
 #include "platform.h"
 #include "snake.h"
 
+// Every platform can store different renderer data as needed
 typedef struct {
 #if defined(SNAKE_PLATFORM_SWITCH)
     PadState pad;
