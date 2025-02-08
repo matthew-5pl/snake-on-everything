@@ -4,7 +4,10 @@
 #include "snake.h"
 
 typedef struct {
-#ifdef SNAKE_PLATFORM_SDL
+#if defined(SNAKE_PLATFORM_SWITCH)
+    PadState pad;
+#endif
+#if defined(SNAKE_PLATFORM_SDL) || defined(SNAKE_PLATFORM_SWITCH)
     SDL_Renderer* renderer;
     SDL_Window* window;
     SDL_Event* event;

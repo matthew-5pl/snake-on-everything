@@ -1,5 +1,5 @@
 all:
-	gcc -o snake source/*.c -lSDL2 -g
+	gcc -o snake source/*.c -lSDL2
 
 clean:
 	rm -rf ./snake

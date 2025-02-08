@@ -8,6 +8,15 @@ void renderer_init(renderer_data** data) {
         GAME_W * GAME_UNIT_PX, GAME_H * GAME_UNIT_PX, 0);
     (*data)->renderer = SDL_CreateRenderer((*data)->window, -1, SDL_RENDERER_ACCELERATED);
     (*data)->event = (SDL_Event*) malloc(sizeof(SDL_Event));
+#elif defined(SNAKE_PLATFORM_SWITCH)
+    (*data)->window = SDL_CreateWindow(SNAKE_SDL_TITLE, 
+        0, 0,
+        1920, 1080, 0);
+    (*data)->renderer = SDL_CreateRenderer((*data)->window, -1, SDL_RENDERER_ACCELERATED);
+    (*data)->event = (SDL_Event*) malloc(sizeof(SDL_Event));
+
+    padConfigureInput(1, HidNpadStyleSet_NpadStandard);
+    padInitializeDefault(&((*data)->pad));
 #elif defined(SNAKE_PLATFORM_GC)
     GRRLIB_Init();
 
@@ -58,6 +67,28 @@ snake_dir renderer_getinput(renderer_data** data) {
                 }
                 break;
         }
+    }
+#elif defined(SNAKE_PLATFORM_SWITCH)
+    padUpdate(&((*data)->pad));
+
+    u64 buttons = padGetButtonsDown(&((*data)->pad));
+
+    u64 is_plus = buttons & HidNpadButton_Plus;
+    u64 is_left = buttons & HidNpadButton_AnyLeft;
+    u64 is_right = buttons & HidNpadButton_AnyRight;
+    u64 is_up = buttons & HidNpadButton_AnyUp;
+    u64 is_down = buttons & HidNpadButton_AnyDown;
+
+    if (is_plus) {
+        renderer_cleanup(data);
+    } else if (is_left) {
+        return LEFT;
+    } else if (is_right) {
+        return RIGHT;
+    } else if (is_up) {
+        return UP;
+    } else if (is_down) {
+        return DOWN;
     }
 #elif defined(SNAKE_PLATFORM_GC)
     PAD_ScanPads();
@@ -139,7 +170,7 @@ snake_dir renderer_getinput(renderer_data** data) {
 }
 
 void renderer_loop(renderer_data** data, snake* s, s_point* apple) {
-#ifdef SNAKE_PLATFORM_SDL
+#if defined(SNAKE_PLATFORM_SDL) || defined(SNAKE_PLATFORM_SWITCH)
     SDL_SetRenderDrawColor((*data)->renderer, 255, 255, 255, 255);
     SDL_RenderClear((*data)->renderer);
 
@@ -241,7 +272,7 @@ void renderer_loop(renderer_data** data, snake* s, s_point* apple) {
 }
 
 void renderer_cleanup(renderer_data** data) {
-#ifdef SNAKE_PLATFORM_SDL
+#if defined(SNAKE_PLATFORM_SDL) || defined(SNAKE_PLATFORM_SWITCH)
     SDL_DestroyRenderer((*data)->renderer);
     SDL_DestroyWindow((*data)->window);
     SDL_Quit();

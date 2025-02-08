@@ -10,7 +10,7 @@ int main() {
     snake s;
     snake_new(&s);
 
-    s_point apple = (s_point) {GAME_W / 2, GAME_H / 20};
+    s_point apple = (s_point) {GAME_W / 2, GAME_H / 2};
 
     #ifdef NO_SLEEP
     unsigned char frame_count = 0;

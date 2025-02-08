@@ -38,6 +38,19 @@
             "cStandard": "c17",
             "cppStandard": "c++17",
             "intelliSenseMode": "gcc-arm"
+        },
+        {
+            "name": "Switch",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/opt/devkitpro/libnx/include",
+                "/opt/devkitpro/portlibs/switch/include"
+            ],
+            "defines": ["__SWITCH__", "PLATFORM_VSCODE"],
+            "compilerPath": "/opt/devkitpro/devkitA64/bin/aarch64-none-elf-gcc",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-arm64"
         }
     ],
     "version": 4
