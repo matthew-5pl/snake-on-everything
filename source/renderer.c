@@ -19,6 +19,18 @@ void renderer_init(renderer_data** data) {
     GXRModeObj *rmode = VIDEO_GetPreferredMode(NULL);
     (*data)->screenWidth = rmode->fbWidth;
     (*data)->screenHeight = rmode->efbHeight;
+#elif defined(SNAKE_PLATFORM_3DS)
+    *data = (renderer_data*) malloc(sizeof(renderer_data));
+    gfxInitDefault();
+
+    C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
+    C2D_Init(C2D_DEFAULT_MAX_OBJECTS);
+    C2D_Prepare();
+    consoleInit(GFX_BOTTOM, NULL);
+
+    (*data)->top = C2D_CreateScreenTarget(GFX_TOP, GFX_RIGHT);
+
+    printf("Welcome to Snake! Press Start to quit.\n");
 #endif
 }
 
@@ -72,6 +84,32 @@ snake_dir renderer_getinput(renderer_data** data) {
     } else if (is_down || sy < 0) {
         return DOWN;
     }
+#elif defined(SNAKE_PLATFORM_3DS)
+    if(!aptMainLoop()) {
+        renderer_cleanup(data);
+    }
+
+    hidScanInput();
+
+    u32 keys = hidKeysDown();
+
+    u32 is_start = keys & KEY_START;
+    u32 is_left = keys & KEY_LEFT;
+    u32 is_right = keys & KEY_RIGHT;
+    u32 is_up = keys & KEY_UP;
+    u32 is_down = keys & KEY_DOWN;
+
+    if (is_start) {
+        renderer_cleanup(data);
+    } else if (is_left) {
+        return LEFT;
+    } else if (is_right) {
+        return RIGHT;
+    } else if (is_up) {
+        return UP;
+    } else if (is_down) {
+        return DOWN;
+    }
 #endif
     return NONE;
 }
@@ -121,6 +159,29 @@ void renderer_loop(renderer_data** data, snake* s, s_point* apple) {
     );
 
     GRRLIB_Render();
+#elif defined(SNAKE_PLATFORM_3DS)
+    C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
+    C2D_TargetClear((*data)->top, C2D_Color32(0xff, 0xff, 0xff, 0xff));
+    C2D_SceneBegin((*data)->top);
+
+    for(int i = 0; i < s->part_count; i++) {        
+        C2D_DrawRectSolid(
+            s->parts[i].x * GAME_UNIT_PX,
+            s->parts[i].y * GAME_UNIT_PX,
+            0, GAME_UNIT_PX, GAME_UNIT_PX,
+            C2D_Color32(0x00, 0x00, 0x00, 0xff)
+        );
+    }
+    
+    C2D_DrawRectSolid(
+        apple->x * GAME_UNIT_PX,
+        apple->y * GAME_UNIT_PX,
+        0, GAME_UNIT_PX, GAME_UNIT_PX,
+        C2D_Color32(0xff, 0x00, 0x00, 0xff)
+    );
+
+    C3D_FrameEnd(0);
+    svcSleepThread(50000000);
 #endif
 }
 
@@ -132,6 +193,11 @@ void renderer_cleanup(renderer_data** data) {
     exit(0);
 #elif defined(SNAKE_PLATFORM_GC)
     GRRLIB_Exit();
+    exit(0);
+#elif defined(SNAKE_PLATFORM_3DS)
+    C2D_Fini();
+    C3D_Fini();
+    gfxExit();
     exit(0);
 #endif
 }

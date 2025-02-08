@@ -6,15 +6,19 @@
 #include "util.h"
 
 // The size of a game unit in pixels
-#define GAME_UNIT_PX 15
-
 // Size of the game world in game units
 #if defined(SNAKE_PLATFORM_SDL)
 #define GAME_W 50
 #define GAME_H 50
+#define GAME_UNIT_PX 15
 #elif defined(SNAKE_PLATFORM_GC)
 #define GAME_W 41
 #define GAME_H 34
+#define GAME_UNIT_PX 15
+#elif defined(SNAKE_PLATFORM_3DS)
+#define GAME_W 49
+#define GAME_H 30
+#define GAME_UNIT_PX 8
 #endif
 
 // Maximum size of a Snake

@@ -12,6 +12,8 @@ typedef struct {
 #elif defined(SNAKE_PLATFORM_GC)
     int screenHeight;
     int screenWidth;
+#elif defined(SNAKE_PLATFORM_3DS)
+    C3D_RenderTarget* top;
 #endif
 } renderer_data;
 

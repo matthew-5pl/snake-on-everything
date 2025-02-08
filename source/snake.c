@@ -55,7 +55,7 @@ void snake_tick(snake* s, s_point* apple) {
         apple->x = rand() % randrange(0, GAME_W - 1);
         apple->y = rand() % randrange(0, GAME_H - 1);
 
-        printf("rand x %d y %d\n", apple->x, apple->y);
+        printf("You got an apple!\n");
     } else {
         for (int i = 0; i < s->part_count - 1; i++) {
             for (int j = 0; j < s->part_count - 1; j++) {
@@ -67,6 +67,8 @@ void snake_tick(snake* s, s_point* apple) {
                     s->parts[i].y == s->parts[j].y &&
                     i != j+1) {
                     s->is_alive = false;
+
+                    printf("You're dead :(\n");
 
                     apple->x = rand() % GAME_W;
                     apple->y = rand() % GAME_H;

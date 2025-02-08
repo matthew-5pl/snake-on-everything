@@ -10,7 +10,7 @@ int main() {
     snake s;
     snake_new(&s);
 
-    s_point apple = (s_point) {25, 25};
+    s_point apple = (s_point) {GAME_W / 2, GAME_H / 20};
 
     while(true) {
         snake_dir dir = renderer_getinput(&data);
