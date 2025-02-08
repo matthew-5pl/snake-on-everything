@@ -16,7 +16,7 @@
 #define GAME_H 34
 #define GAME_UNIT_PX 15
 #elif defined(SNAKE_PLATFORM_3DS)
-#define GAME_W 49
+#define GAME_W 50
 #define GAME_H 30
 #define GAME_UNIT_PX 8
 #endif
