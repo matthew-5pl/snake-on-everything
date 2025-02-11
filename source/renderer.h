@@ -12,7 +12,7 @@ typedef struct {
     SDL_Renderer* renderer;
     SDL_Window* window;
     SDL_Event* event;
-#elif defined(SNAKE_PLATFORM_GC)
+#elif defined(SNAKE_PLATFORM_GC) || defined(SNAKE_PLATFORM_WII)
     int screenHeight;
     int screenWidth;
 #elif defined(SNAKE_PLATFORM_3DS)

@@ -18,10 +18,14 @@ void renderer_init(renderer_data** data) {
 
     padConfigureInput(1, HidNpadStyleSet_NpadStandard);
     padInitializeDefault(&((*data)->pad));
-#elif defined(SNAKE_PLATFORM_GC) // Gamecube
+#elif defined(SNAKE_PLATFORM_GC) || defined(SNAKE_PLATFORM_WII) // Gamecube/Wii
     GRRLIB_Init();
 
     PAD_Init();
+
+    #ifdef SNAKE_PLATFORM_WII
+        WPAD_Init();
+    #endif
 
     GXRModeObj *rmode = VIDEO_GetPreferredMode(NULL);
     (*data)->screenWidth = rmode->fbWidth;
@@ -94,15 +98,27 @@ snake_dir renderer_getinput(renderer_data** data) {
     } else if (is_down) {
         return DOWN;
     }
-#elif defined(SNAKE_PLATFORM_GC) // Handle Gamecube input
+#elif defined(SNAKE_PLATFORM_GC) || defined(SNAKE_PLATFORM_WII) // Handle Gamecube/Wii input
     PAD_ScanPads();
 
     u16 buttons = PAD_ButtonsDown(0);
-    u16 is_start = PAD_ButtonsDown(0) & PAD_BUTTON_START;
-    u16 is_left = PAD_ButtonsDown(0) & PAD_BUTTON_LEFT;
-    u16 is_right = PAD_ButtonsDown(0) & PAD_BUTTON_RIGHT;
-    u16 is_up = PAD_ButtonsDown(0) & PAD_BUTTON_UP;
-    u16 is_down = PAD_ButtonsDown(0) & PAD_BUTTON_DOWN;
+    u16 is_start = buttons & PAD_BUTTON_START;
+    u16 is_left = buttons & PAD_BUTTON_LEFT;
+    u16 is_right = buttons & PAD_BUTTON_RIGHT;
+    u16 is_up = buttons & PAD_BUTTON_UP;
+    u16 is_down = buttons & PAD_BUTTON_DOWN;
+
+    #ifdef SNAKE_PLATFORM_WII
+    WPAD_ScanPads();
+    // Handle Wii Remote Input
+    u32 wii_buttons = WPAD_ButtonsDown(0);
+    
+    is_start |= (wii_buttons & WPAD_BUTTON_PLUS);
+    is_left |= (wii_buttons & WPAD_BUTTON_LEFT);
+    is_right |= (wii_buttons & WPAD_BUTTON_RIGHT);
+    is_up |= (wii_buttons & WPAD_BUTTON_UP);
+    is_down |= (wii_buttons & WPAD_BUTTON_DOWN);
+    #endif
 
     s8 sx = PAD_StickX(0);
     s8 sy = PAD_StickY(0);
@@ -220,7 +236,7 @@ void renderer_loop(renderer_data** data, snake* s, s_point* apple) {
 
     SDL_RenderPresent((*data)->renderer);
     SDL_Delay(50);
-#elif defined(SNAKE_PLATFORM_GC) // Handle Gamecube rendering (GRRLIB)
+#elif defined(SNAKE_PLATFORM_GC) || defined(SNAKE_PLATFORM_WII) // Handle Gamecube/Wii rendering (GRRLIB)
     GRRLIB_FillScreen(0xffffffff);
 
     for(int i = 0; i < s->part_count; i++) {        
@@ -324,7 +340,7 @@ void renderer_cleanup(renderer_data** data) {
     SDL_DestroyWindow((*data)->window);
     SDL_Quit();
     exit(0);
-#elif defined(SNAKE_PLATFORM_GC)
+#elif defined(SNAKE_PLATFORM_GC) || defined(SNAKE_PLATFORM_WII)
     GRRLIB_Exit();
     exit(0);
 #elif defined(SNAKE_PLATFORM_3DS)

@@ -21,6 +21,16 @@
 #define GC_STICK_THRESHOLD 48
 #define NO_SLEEP
 
+#elif defined(WII)
+#define SNAKE_PLATFORM_WII
+#include <grrlib.h>
+#include <ogc/video.h>
+#include <ogc/pad.h>
+#include <wiiuse/wpad.h>
+
+#define GC_STICK_THRESHOLD 48
+#define NO_SLEEP
+
 // 3DS
 #elif defined(__3DS__)
 #define SNAKE_PLATFORM_3DS

@@ -14,7 +14,7 @@
 #define GAME_W 50
 #define GAME_H 50
 #define GAME_UNIT_PX 15
-#elif defined(SNAKE_PLATFORM_GC)
+#elif defined(SNAKE_PLATFORM_GC) || defined(SNAKE_PLATFORM_WII)
 #define GAME_W 42
 #define GAME_H 35
 #define GAME_UNIT_PX 15
