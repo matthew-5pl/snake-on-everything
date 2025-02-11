@@ -26,7 +26,7 @@
 #define GAME_W 42
 #define GAME_H 32
 #define GAME_UNIT_PX 6
-#elif defined(SNAKE_PLATFORM_SWITCH)
+#elif defined(SNAKE_PLATFORM_SWITCH) || defined(SNAKE_PLATFORM_WIIU)
 #define GAME_W 64
 #define GAME_H 36
 #define GAME_UNIT_PX 30

@@ -8,7 +8,7 @@ typedef struct {
 #if defined(SNAKE_PLATFORM_SWITCH)
     PadState pad;
 #endif
-#if defined(SNAKE_PLATFORM_SDL) || defined(SNAKE_PLATFORM_SWITCH)
+#if defined(HAS_SDL)
     SDL_Renderer* renderer;
     SDL_Window* window;
     SDL_Event* event;
@@ -17,6 +17,10 @@ typedef struct {
     int screenWidth;
 #elif defined(SNAKE_PLATFORM_3DS)
     C3D_RenderTarget* top;
+#endif
+#if defined(SNAKE_PLATFORM_WIIU)
+    VPADStatus gamepad;
+    VPADReadError error;
 #endif
 } renderer_data;
 

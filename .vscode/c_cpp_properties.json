@@ -77,6 +77,19 @@
             "cStandard": "c17",
             "cppStandard": "c++17",
             "intelliSenseMode": "gcc-arm"
+        },
+        {
+            "name": "Wii U",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/opt/devkitpro/wut/include",
+                "/opt/devkitpro/portlibs/wiiu/include"
+            ],
+            "defines": ["__WIIU__", "PLATFORM_VSCODE"],
+            "compilerPath": "/opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-arm"
         }
     ],
     "version": 4

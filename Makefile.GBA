@@ -42,7 +42,7 @@ CFLAGS	:=	-g -Wall -O2\
 		-mcpu=arm7tdmi -mtune=arm7tdmi\
 		$(ARCH) -D__GBA__
 
-CFLAGS	+=	$(INCLUDE) -std=c99
+CFLAGS	+=	$(INCLUDE)
 
 CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions
 

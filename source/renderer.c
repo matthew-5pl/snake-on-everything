@@ -46,6 +46,15 @@ void renderer_init(renderer_data** data) {
     glScreen2D();
 #elif defined(SNAKE_PLATFORM_GBA) // GBA
     REG_DISPCNT= DCNT_MODE3 | DCNT_BG2;
+#elif defined(SNAKE_PLATFORM_WIIU) // Wii U
+    WHBProcInit();
+    VPADInit();
+
+    (*data)->window = SDL_CreateWindow(SNAKE_SDL_TITLE, 
+        0, 0,
+        1920, 1080, 0);
+    (*data)->renderer = SDL_CreateRenderer((*data)->window, -1, SDL_RENDERER_ACCELERATED);
+    (*data)->event = (SDL_Event*) malloc(sizeof(SDL_Event));
 #endif
     // Not all platforms get to see this :(
     printf("Welcome to Snake! Press Start to quit.\n");
@@ -205,6 +214,32 @@ snake_dir renderer_getinput(renderer_data** data) {
     } else if (is_down) {
         return DOWN;
     }
+#elif defined(SNAKE_PLATFORM_WIIU) // Handle Wii U input
+    u32 result = VPADRead(VPAD_CHAN_0, &((*data)->gamepad), 1, &((*data)->error));
+
+    if(result > 0 && (*data)->error == VPAD_READ_SUCCESS) {
+        u32 buttons = (*data)->gamepad.hold;
+
+        u32 is_plus = buttons & VPAD_BUTTON_PLUS;
+        u32 is_left = buttons & VPAD_BUTTON_LEFT;
+        u32 is_right = buttons & VPAD_BUTTON_RIGHT;
+        u32 is_up = buttons & VPAD_BUTTON_UP;
+        u32 is_down = buttons & VPAD_BUTTON_DOWN;
+
+        VPADVec2D left_stick = (*data)->gamepad.leftStick;
+
+        if (is_plus) {
+            renderer_cleanup(data);
+        } else if (is_left || left_stick.x < -WIIU_STICK_THRESHOLD) {
+            return LEFT;
+        } else if (is_right || left_stick.x > WIIU_STICK_THRESHOLD) {
+            return RIGHT;
+        } else if (is_up || left_stick.y > WIIU_STICK_THRESHOLD) {
+            return UP;
+        } else if (is_down || left_stick.y < -WIIU_STICK_THRESHOLD) {
+            return DOWN;
+        }
+    }
 #endif
     return NONE;
 }
@@ -212,7 +247,7 @@ snake_dir renderer_getinput(renderer_data** data) {
 void renderer_loop(renderer_data** data, snake* s, s_point* apple) {
     // I also use SDL2 for rendering on the Switch
     // So the rendering code is shared with desktop platforms
-#if defined(SNAKE_PLATFORM_SDL) || defined(SNAKE_PLATFORM_SWITCH)
+#if defined(HAS_SDL)
     SDL_SetRenderDrawColor((*data)->renderer, 255, 255, 255, 255);
     SDL_RenderClear((*data)->renderer);
 
@@ -335,20 +370,21 @@ void renderer_loop(renderer_data** data, snake* s, s_point* apple) {
 }
 
 void renderer_cleanup(renderer_data** data) {
-#if defined(SNAKE_PLATFORM_SDL) || defined(SNAKE_PLATFORM_SWITCH)
+#if defined(HAS_SDL)
     SDL_DestroyRenderer((*data)->renderer);
     SDL_DestroyWindow((*data)->window);
     SDL_Quit();
-    exit(0);
 #elif defined(SNAKE_PLATFORM_GC) || defined(SNAKE_PLATFORM_WII)
     GRRLIB_Exit();
-    exit(0);
 #elif defined(SNAKE_PLATFORM_3DS)
     C2D_Fini();
     C3D_Fini();
     gfxExit();
-    exit(0);
-#elif defined(SNAKE_PLATFORM_DS) || defined(SNAKE_PLATFORM_GBA)
-    exit(0);
 #endif
+#if defined(SNAKE_PLATFORM_WIIU)
+    VPADShutdown();
+    WHBProcStopRunning();
+    WHBProcShutdown();
+#endif
+    exit(0);
 }
