@@ -1,5 +1,7 @@
 #ifndef SNAKE_PLATFORM_H_
 
+// Begin platform checks
+
 // SDL platforms
 #if defined(_WIN32) || defined(WIN32) || defined(__unix__) || defined(__APPLE__)
 #ifndef PLATFORM_VSCODE // Avoid making VSCode confused when working on other platforms
@@ -42,7 +44,13 @@
 #include <SDL2/SDL.h>
 // We can just use SDL2 for rendering here
 #include <switch.h>
-#endif
 
-#define SNAKE_PLATFORM_H_
+#elif defined(__GBA__)
+#define SNAKE_PLATFORM_GBA
+#define NO_SLEEP
+#include <tonc.h>
+
+#endif // End platform checks
+
+#define SNAKE_PLATFORM_H_ // SNAKE_PLATFORM_H_
 #endif

@@ -30,6 +30,10 @@
 #define GAME_W 64
 #define GAME_H 36
 #define GAME_UNIT_PX 30
+#elif defined(SNAKE_PLATFORM_GBA)
+#define GAME_W 40
+#define GAME_H 26
+#define GAME_UNIT_PX 6
 #endif
 
 // Maximum size of a Snake

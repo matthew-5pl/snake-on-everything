@@ -33,6 +33,8 @@ void snake_tick(snake* s, s_point* apple) {
         case DOWN:
             head->y++;
             break;
+        case NONE:
+            break;
     }
 
     // Loop the position around the game world

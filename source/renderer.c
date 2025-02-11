@@ -40,6 +40,8 @@ void renderer_init(renderer_data** data) {
     consoleDemoInit();
 
     glScreen2D();
+#elif defined(SNAKE_PLATFORM_GBA) // GBA
+    REG_DISPCNT= DCNT_MODE3 | DCNT_BG2;
 #endif
     // Not all platforms get to see this :(
     printf("Welcome to Snake! Press Start to quit.\n");
@@ -167,6 +169,26 @@ snake_dir renderer_getinput(renderer_data** data) {
     } else if (is_down) {
         return DOWN;
     }
+#elif defined(SNAKE_PLATFORM_GBA) // Handle GBA input
+    key_poll();
+
+    u32 is_start = key_hit(KEY_START);
+    u32 is_left = key_hit(KEY_LEFT);
+    u32 is_right = key_hit(KEY_RIGHT);
+    u32 is_up = key_hit(KEY_UP);
+    u32 is_down = key_hit(KEY_DOWN);
+
+    if (is_start) {
+        renderer_cleanup(data);
+    } else if (is_left) {
+        return LEFT;
+    } else if (is_right) {
+        return RIGHT;
+    } else if (is_up) {
+        return UP;
+    } else if (is_down) {
+        return DOWN;
+    }
 #endif
     return NONE;
 }
@@ -272,6 +294,27 @@ void renderer_loop(renderer_data** data, snake* s, s_point* apple) {
     swiWaitForVBlank();
 
     sleep_ms(50);
+#elif defined(SNAKE_PLATFORM_GBA) // Handle GBA rendering (libtonc)
+    vid_vsync();
+    m3_fill(RGB15(31, 31, 31));
+
+    for(int i = 0; i < s->part_count; i++) {              
+        m3_rect(
+            s->parts[i].x * GAME_UNIT_PX,
+            s->parts[i].y * GAME_UNIT_PX,
+            s->parts[i].x * GAME_UNIT_PX + GAME_UNIT_PX,
+            s->parts[i].y * GAME_UNIT_PX + GAME_UNIT_PX,
+            CLR_BLACK
+        );
+    }
+
+    m3_rect(
+        apple->x * GAME_UNIT_PX,
+        apple->y * GAME_UNIT_PX,
+        apple->x * GAME_UNIT_PX + GAME_UNIT_PX,
+        apple->y * GAME_UNIT_PX + GAME_UNIT_PX,
+        CLR_RED
+    );
 #endif
 }
 
@@ -289,7 +332,7 @@ void renderer_cleanup(renderer_data** data) {
     C3D_Fini();
     gfxExit();
     exit(0);
-#elif defined(SNAKE_PLATFORM_DS)
+#elif defined(SNAKE_PLATFORM_DS) || defined(SNAKE_PLATFORM_GBA)
     exit(0);
 #endif
 }
