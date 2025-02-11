@@ -50,12 +50,18 @@ void snake_tick(snake* s, s_point* apple) {
 
     // Check potential collisions with the apple
     if (head->x == apple->x && head->y == apple->y) {
-        snake_add_part(s);
-
         apple->x = rand() % randrange(0, GAME_W - 1);
         apple->y = rand() % randrange(0, GAME_H - 1);
 
         printf("You got an apple!\n");
+        
+        snake_add_part(s);
+        printf("Lenght: %d\n", s->part_count);
+
+        for (int i = 0; i < s->part_count - 1; i++) {
+            s->parts[i].x = s->parts[i + 1].x;
+            s->parts[i].y = s->parts[i + 1].y;
+        }
     } else {
         // Check for collisions with other parts
         for (int i = 0; i < s->part_count - 1; i++) {
@@ -72,8 +78,8 @@ void snake_tick(snake* s, s_point* apple) {
                     printf("You're dead :(\n");
 
                     // Randomize the position of the apple
-                    apple->x = rand() % GAME_W;
-                    apple->y = rand() % GAME_H;
+                    apple->x = rand() % randrange(0, GAME_W - 1);
+                    apple->y = rand() % randrange(0, GAME_H - 1);
 
                     // Reset the snake
                     snake_new(s);
@@ -87,12 +93,31 @@ void snake_tick(snake* s, s_point* apple) {
 }
 
 void snake_add_part(snake* s) {
-    if(s->part_count >= MAX_SNAKE-1) {
+    if (s->part_count >= MAX_SNAKE-1) {
         return;
     }
 
-    s->parts[s->part_count].x = s->parts[s->part_count-1].x;
-    s->parts[s->part_count].y = s->parts[s->part_count-1].y;
+    switch (s->direction) {
+        case UP:
+            s->parts[s->part_count].x = s->parts[s->part_count-1].x;
+            s->parts[s->part_count].y = s->parts[s->part_count-1].y - 1;
+            break;
+        case DOWN:
+            s->parts[s->part_count].x = s->parts[s->part_count-1].x;
+            s->parts[s->part_count].y = s->parts[s->part_count-1].y + 1;
+            break;
+        case LEFT:
+            s->parts[s->part_count].x = s->parts[s->part_count-1].x - 1;
+            s->parts[s->part_count].y = s->parts[s->part_count-1].y;
+            break;
+        case RIGHT:
+            s->parts[s->part_count].x = s->parts[s->part_count-1].x + 1;
+            s->parts[s->part_count].y = s->parts[s->part_count-1].y;
+            break;
+        case NONE:
+            break;
+    }
+
     s->part_count++;
 }
 
