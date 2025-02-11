@@ -56,7 +56,6 @@ void snake_tick(snake* s, s_point* apple) {
         printf("You got an apple!\n");
         
         snake_add_part(s);
-        printf("Lenght: %d\n", s->part_count);
 
         for (int i = 0; i < s->part_count - 1; i++) {
             s->parts[i].x = s->parts[i + 1].x;
