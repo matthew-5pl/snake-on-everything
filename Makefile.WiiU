@@ -36,9 +36,14 @@ SOURCES		:=	source
 DATA		:=	data
 INCLUDES	:=	include
 CONTENT		:=
-ICON		:=
-TV_SPLASH	:=
-DRC_SPLASH	:=
+
+APP_NAME		:= Snake
+APP_SHORTNAME	:= Snake
+APP_AUTHOR		:= matthew5pl.net
+
+ICON		:=	icon-wiiu.jpg
+TV_SPLASH	:=	splash-wiiu-tv.jpg
+DRC_SPLASH	:=	splash-wiiu.jpg
 
 #-------------------------------------------------------------------------------
 # options for code generation

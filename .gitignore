@@ -4,3 +4,6 @@ snake
 *.elf
 *.dol
 *.smdh
+*.nds
+*.whb
+*.gba

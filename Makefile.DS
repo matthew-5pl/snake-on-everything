@@ -27,6 +27,11 @@ DATA		:=	data
 INCLUDES	:=	include
 GRAPHICS	:=	gfx
 
+GAME_TITLE		:= Snake
+GAME_SUBTITLE1	:= Play Snake!
+GAME_SUBTITLE2	:= matthew5pl.net
+GAME_ICON		:= $(CURDIR)/../icon-ds.bmp
+
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
