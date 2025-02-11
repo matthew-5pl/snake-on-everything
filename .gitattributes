@@ -1,6 +1,2 @@
 *.3 linguist-language=Makefile
-*.3DS linguist-language=Makefile
-*.DS linguist-language=Makefile
-*.GC linguist-language=Makefile
-*.SDL2 linguist-language=Makefile
-*.Switch linguist-language=Makefile
+Makefile.* linguist-language=Makefile
